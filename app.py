@@ -1,3 +1,4 @@
+# app.py
 
 import streamlit as st
 import pandas as pd
@@ -32,9 +33,10 @@ if start_simulation:
         data = pd.read_csv(uploaded_file)
         results, stats = run_simulation(data, starting_balance, starting_bet)
 
-        # Save results to CSV
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_path = f"output/simulation_results_{timestamp}.csv"
+        # 🛠 Create output filename based on input file name
+        input_filename = uploaded_file.name.replace('.csv', '').replace(' ', '_')
+        output_path = f"output/simulation_results_{input_filename}.csv"
+
         results.to_csv(output_path, index=False)
 
         st.success(f"Simulation complete! Results saved to {output_path}")
@@ -77,6 +79,6 @@ if start_simulation:
             st.download_button(
                 label="📥 Download Simulation Results CSV",
                 data=f,
-                file_name=f"simulation_results_{timestamp}.csv",
+                file_name=f"simulation_results_{input_filename}.csv",
                 mime="text/csv"
             )
