@@ -7,3 +7,4 @@ Date/Time,Input File,Starting Balance,Starting Bet,Final Balance,Total Profit,Wi
 2025-04-28 20:03:02,lonestar_rd3.csv,1000,5,750.0,-250.0,33.33%,60,simulation_results_lonestar_rd3_1000_5_20250428_200302.csv
 2025-04-28 20:04:04,lonestar_rd3.csv,1000,10,161.0,-839.0,28.57%,42,simulation_results_lonestar_rd3_1000_10_20250428_200404.csv
 2025-04-28 20:11:34,lonestar_rd5.csv,500,10,759.0,259.0,45.00%,60,simulation_results_lonestar_rd5_500_10_20250428_201134.csv
+2025-04-28 22:44:36,lonestar_rd5.csv,500,15,888.5,388.5,45.00%,60,simulation_results_lonestar_rd5_500_15_20250428_224436.csv

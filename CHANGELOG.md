@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.4] - 2025-04-28
+### Added
+- Implemented **user authentication system** (Login, Register, Logout)
+- Created a new `auth.py` module using **SQLite** and **bcrypt**
+- Integrated **session management** into `app.py`
+- Added **"Remember Me"** functionality for longer sessions
+- Designed **premium UI** for authentication flow (green/white casino aesthetic)
+- Updated project structure and improved code modularity
+
+### Fixed
+- Minor visual inconsistencies in Streamlit layouts
+
+### Notes
+- This is a **major upgrade** preparing the simulator for future personalized features like user-specific statistics and history.
+
+---
+
 ## [v1.3] - 2025-04-28
 
 ### Major Enhancements
