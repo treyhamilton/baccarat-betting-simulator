@@ -1,6 +1,11 @@
 
 # 🎰 Baccarat Betting Simulator
 
+[![Streamlit App](https://img.shields.io/badge/Framework-Streamlit-FF4B4B?logo=streamlit)](https://streamlit.io/)
+[![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)](https://www.python.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Status](https://img.shields.io/badge/Status-Active-brightgreen)]()
+
 > A professional-grade, Streamlit-based simulation tool for analyzing baccarat betting strategies and results across multiple sessions.
 
 ---
@@ -97,6 +102,6 @@ See [Releases](https://github.com/treyhamilton/baccarat-betting-simulator/releas
 
 ---
 
-## 👨‍💻 Built With ❤️ by Trey Hamilton
+## 👨‍💻 Built by Trey Hamilton
 
 ---
