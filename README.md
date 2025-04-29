@@ -17,6 +17,12 @@
 - Professional UI with Streamlit tabs, metrics, graphs, and download options
 - Export detailed CSV results automatically
 - Future-proof design with scalable session management
+- 🔐 **Secure Login and Registration system**  
+- 🗄️ **SQLite database** to store user accounts  
+- 🔒 **Passwords hashed** with bcrypt for security  
+- 🎨 **Premium styled login/register pages** (casino green/white theme)  
+- 📲 **Remember Me** session support  
+- 🧹 Minor UI and backend improvements
 
 ---
 
@@ -59,13 +65,22 @@ streamlit run app.py
 ## 📂 Folder Structure
 
 ```
-├── app.py                # Main Streamlit app
-├── simulation.py         # Core simulation engine
-├── visualization.py      # Chart generation
-├── output/                # Saved simulation results
-├── session_history.csv    # Tracker for past sessions
-├── README.md              # (This file)
-└── requirements.txt       # Project dependencies
+# 📄 Baccarat Betting Simulator — Project Structure
+
+baccarat-betting-simulator/
+├── __pycache__/
+├── baccarat_round_outcomes/     # CSV files containing outcomes - Used for input
+├── output/                      # Saved simulation results
+├── app.py                       # Main Streamlit app
+├── auth.py                      # User authentication logic (login, register, password hashing)
+├── CHANGELOG.md                 # Version change updates
+├── README.md                    # (This file)
+├── requirements.txt             # Project dependencies
+├── session_history.csv          # Tracker for past sessions
+├── simulation.py                # Core simulation engine
+├── users.db                     # SQLite database storing user credentials
+├── visualization.py             # Chart generation
+
 ```
 
 ---
