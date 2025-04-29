@@ -6,10 +6,11 @@ import os
 from datetime import datetime
 from simulation import run_simulation
 from visualization import plot_balance_over_time, plot_win_breakdown, plot_sequence_frequency
-from auth import create_users_table, register_user, login_user
+from auth import create_users_table, create_user_sessions_table, register_user, login_user, log_user_session, get_user_sessions
 
 # DB setup
 create_users_table()
+create_user_sessions_table()
 
 def login_register_ui():
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -20,7 +21,7 @@ def login_register_ui():
             st.session_state.remember_me = False
 
         if st.session_state.page == "login":
-            st.markdown("## 🎲 Casino Login")
+            st.markdown("## 🎰 Baccarat Betting Simulator Login")
             username = st.text_input("Username", key="login_user")
             password = st.text_input("Password", type="password", key="login_pass")
             st.session_state.remember_me = st.checkbox("Remember me")
@@ -139,6 +140,21 @@ def main():
                         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                         output_filename = f"simulation_results_{input_filename}_{starting_balance}_{starting_bet}_{timestamp}.csv"
                         output_path = f"output/{output_filename}"
+
+                        # Log the simulation session automatically
+                        log_user_session(
+                            username=st.session_state["username"],
+                            input_file=uploaded_file.name,
+                            starting_balance=starting_balance,
+                            starting_bet=starting_bet,
+                            final_balance=stats["Final Balance"],
+                            total_profit=stats["Total Profit"],
+                            win_rate=stats["Win Rate"],
+                            hands_played=stats["Hands Played"],
+                            output_file=output_filename,
+                            strategy_used="Custom Strategy"
+                        )
+                        st.info("✅ Session automatically saved to your user history!")
 
                         results.to_csv(output_path, index=False)
 
@@ -316,6 +332,51 @@ def main():
                 )
             else:
                 st.info("No past sessions found. Run a simulation first!")
+
+            st.header("📘 Your Personal User Session History")
+
+            user_sessions = get_user_sessions(st.session_state["username"])
+
+            if user_sessions:
+                user_df = pd.DataFrame(user_sessions, columns=[
+                    "Date/Time", "Input File", "Starting Balance", "Starting Bet",
+                    "Final Balance", "Total Profit", "Win Rate", "Hands Played",
+                    "Output File", "Strategy"
+                ])
+
+                # Force Total Profit to numeric for highlighting
+                user_df["Total Profit"] = pd.to_numeric(user_df["Total Profit"], errors='coerce')
+
+                # ✅ Now reorder columns
+                user_df = user_df[[
+                    "Date/Time", "Input File", "Strategy",
+                    "Starting Balance", "Starting Bet",
+                    "Final Balance", "Total Profit", "Win Rate",
+                    "Hands Played", "Output File"
+                ]]
+
+                # Highlight profit
+                def highlight_profit(row):
+                    if row["Total Profit"] > 0:
+                        return ['background-color: #a5d6a7'] * len(row)
+                    elif row["Total Profit"] < 0:
+                        return ['background-color: #ef9a9a'] * len(row)
+                    else:
+                        return [''] * len(row)
+
+                # Display table
+                st.dataframe(user_df.style.apply(highlight_profit, axis=1))
+
+                # Add download button
+                st.download_button(
+                    label="📥 Download Your Session History",
+                    data=user_df.to_csv(index=False),
+                    file_name="my_user_session_history.csv",
+                    mime="text/csv"
+                )
+                
+            else:
+                st.info("You have no saved sessions yet.")
 
 if __name__ == "__main__":
     main()
