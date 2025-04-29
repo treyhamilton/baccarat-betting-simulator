@@ -34,82 +34,149 @@ simulator_tab, past_sessions_tab = st.tabs(["Simulator", "Past Sessions"])
 
 # Simulator Tab
 with simulator_tab:
-    if start_simulation:
-        if uploaded_file is None:
-            st.error("Please upload a CSV file.")
-        else:
-            data = pd.read_csv(uploaded_file)
-            results, stats = run_simulation(data, starting_balance, starting_bet)
+    st.header("🎛️ Simulation Mode")
+    sim_mode = st.radio("Select Mode", ("Run New Simulation", "Load Past Simulation"))
 
-            # Create output filename based on input file name
-            input_filename = uploaded_file.name.replace('.csv', '').replace(' ', '_')
-            output_path = f"output/simulation_results_{input_filename}.csv"
-
-            results.to_csv(output_path, index=False)
-
-            st.success(f"Simulation complete! Results saved to {output_path}")
-
-            # 🏆 Session Summary Cards
-            st.header("🏆 Session Summary")
-            col1, col2, col3, col4 = st.columns(4)
-            col1.metric("Final Balance", f"${stats['Final Balance']:.2f}")
-            col2.metric("Total Profit", f"${stats['Total Profit']:.2f}")
-            col3.metric("Win Rate", stats['Win Rate'])
-            col4.metric("Hands Played", stats['Hands Played'])
-
-            # 📊 Simulation Statistics
-            st.header("📊 Simulation Statistics")
-            for key, value in stats.items():
-                if key not in ["Final Balance", "Total Profit", "Win Rate"]:
-                    st.write(f"**{key}:** {value}")
-
-            # 📈 Visualizations
-            st.header("📈 Visualizations")
-            st.plotly_chart(plot_balance_over_time(results))
-            st.plotly_chart(plot_win_breakdown(results))
-            st.plotly_chart(plot_sequence_frequency(results))
-
-            # 📋 Simulation Results Table Section
-            st.header("📋 Simulation Results Table")
-            with st.expander("Click to view full simulation details"):
-                def highlight_win_loss(row):
-                    if row["Result"] == "Win":
-                        return ['background-color: #a5d6a7'] * len(row)
-                    elif row["Result"] == "Loss":
-                        return ['background-color: #ef9a9a'] * len(row)
-                    else:
-                        return ['background-color: #90caf9'] * len(row)
-                styled_results = results.style.apply(highlight_win_loss, axis=1)
-                st.dataframe(styled_results, use_container_width=True)
-
-            # 📥 Download CSV Button
-            with open(output_path, "rb") as f:
-                st.download_button(
-                    label="📥 Download Simulation Results CSV",
-                    data=f,
-                    file_name=f"simulation_results_{input_filename}.csv",
-                    mime="text/csv"
-                )
-
-            # 📝 Save session summary
-            session_summary = {
-                "Date/Time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "Input File": uploaded_file.name,
-                "Starting Balance": starting_balance,
-                "Starting Bet": starting_bet,
-                "Final Balance": stats["Final Balance"],
-                "Total Profit": stats["Total Profit"],
-                "Win Rate": stats["Win Rate"],
-                "Hands Played": stats["Hands Played"]
-            }
-
-            if os.path.exists(SESSION_HISTORY_PATH):
-                session_history = pd.read_csv(SESSION_HISTORY_PATH)
-                session_history = pd.concat([session_history, pd.DataFrame([session_summary])], ignore_index=True)
+    if sim_mode == "Run New Simulation":
+        if start_simulation:
+            if uploaded_file is None:
+                st.error("Please upload a CSV file.")
             else:
-                session_history = pd.DataFrame([session_summary])
+                data = pd.read_csv(uploaded_file)
+                results, stats = run_simulation(data, starting_balance, starting_bet)
 
-            session_history.to_csv(SESSION_HISTORY_PATH, index=False)
+                # Create unique output filename
+                input_filename = uploaded_file.name.replace('.csv', '').replace(' ', '_')
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                output_filename = f"simulation_results_{input_filename}_{starting_balance}_{starting_bet}_{timestamp}.csv"
+                output_path = f"output/{output_filename}"
+
+                results.to_csv(output_path, index=False)
+
+                st.success(f"Simulation complete! Results saved to {output_path}")
+
+                # Save session summary
+                session_summary = {
+                    "Date/Time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "Input File": uploaded_file.name,
+                    "Starting Balance": starting_balance,
+                    "Starting Bet": starting_bet,
+                    "Final Balance": stats["Final Balance"],
+                    "Total Profit": stats["Total Profit"],
+                    "Win Rate": stats["Win Rate"],
+                    "Hands Played": stats["Hands Played"],
+                    "Output File": output_filename
+                }
+
+                if os.path.exists(SESSION_HISTORY_PATH):
+                    session_history = pd.read_csv(SESSION_HISTORY_PATH)
+                    session_history = pd.concat([session_history, pd.DataFrame([session_summary])], ignore_index=True)
+                else:
+                    session_history = pd.DataFrame([session_summary])
+
+                session_history.to_csv(SESSION_HISTORY_PATH, index=False)
+
+                # Display Results
+                st.header("🏆 Session Summary")
+                col1, col2, col3, col4 = st.columns(4)
+                col1.metric("Final Balance", f"${stats['Final Balance']:.2f}")
+                col2.metric("Total Profit", f"${stats['Total Profit']:.2f}")
+                col3.metric("Win Rate", stats['Win Rate'])
+                col4.metric("Hands Played", stats['Hands Played'])
+
+                st.header("📈 Visualizations")
+                st.plotly_chart(plot_balance_over_time(results))
+                st.plotly_chart(plot_win_breakdown(results))
+                st.plotly_chart(plot_sequence_frequency(results))
+
+                st.header("📋 Simulation Results Table")
+                with st.expander("Click to view full simulation details"):
+                    def highlight_win_loss(row):
+                        if row["Result"] == "Win":
+                            return ['background-color: #a5d6a7'] * len(row)
+                        elif row["Result"] == "Loss":
+                            return ['background-color: #ef9a9a'] * len(row)
+                        else:
+                            return ['background-color: #90caf9'] * len(row)
+                    styled_results = results.style.apply(highlight_win_loss, axis=1)
+                    st.dataframe(styled_results, use_container_width=True)
+
+                with open(output_path, "rb") as f:
+                    st.download_button(
+                        label="📥 Download Simulation Results CSV",
+                        data=f,
+                        file_name=output_filename,
+                        mime="text/csv"
+                    )
+
+    elif sim_mode == "Load Past Simulation":
+        st.header("📂 Load Previous Simulation")
+
+        if os.path.exists(SESSION_HISTORY_PATH):
+            session_history = pd.read_csv(SESSION_HISTORY_PATH)
+
+            if not session_history.empty:
+                selected_round = st.selectbox("Select Baccarat Round:", options=session_history["Input File"].unique())
+
+                filtered_by_round = session_history[session_history["Input File"] == selected_round]
+                available_balances = filtered_by_round["Starting Balance"].unique()
+                selected_balance = st.selectbox("Select Starting Balance:", options=available_balances)
+
+                filtered_by_balance = filtered_by_round[filtered_by_round["Starting Balance"] == selected_balance]
+                available_bets = filtered_by_balance["Starting Bet"].unique()
+                selected_bet = st.selectbox("Select Starting Bet:", options=available_bets)
+
+                final_selection = filtered_by_balance[filtered_by_balance["Starting Bet"] == selected_bet]
+
+                if not final_selection.empty:
+                    output_file_to_load = final_selection.iloc[-1]["Output File"]
+                    loaded_data = pd.read_csv(f"output/{output_file_to_load}")
+
+                    # Calculate stats manually
+                    balance = loaded_data["Balance"].iloc[-1]
+                    total_profit = balance - loaded_data["Balance"].iloc[0]
+                    wins = loaded_data[loaded_data["Result"] == "Win"].shape[0]
+                    total_hands = loaded_data.shape[0]
+                    win_rate = f"{(wins/total_hands)*100:.1f}%"
+
+                    stats = {
+                        "Final Balance": balance,
+                        "Total Profit": total_profit,
+                        "Win Rate": win_rate,
+                        "Hands Played": total_hands
+                    }
+
+                    st.success(f"Loaded simulation from {output_file_to_load}")
+
+                    st.header("🏆 Session Summary")
+                    col1, col2, col3, col4 = st.columns(4)
+                    col1.metric("Final Balance", f"${stats['Final Balance']:.2f}")
+                    col2.metric("Total Profit", f"${stats['Total Profit']:.2f}")
+                    col3.metric("Win Rate", stats['Win Rate'])
+                    col4.metric("Hands Played", stats['Hands Played'])
+
+                    st.header("📈 Visualizations")
+                    st.plotly_chart(plot_balance_over_time(loaded_data))
+                    st.plotly_chart(plot_win_breakdown(loaded_data))
+                    st.plotly_chart(plot_sequence_frequency(loaded_data))
+
+                    st.header("📋 Simulation Results Table")
+                    with st.expander("Click to view full simulation details"):
+                        def highlight_win_loss(row):
+                            if row["Result"] == "Win":
+                                return ['background-color: #a5d6a7'] * len(row)
+                            elif row["Result"] == "Loss":
+                                return ['background-color: #ef9a9a'] * len(row)
+                            else:
+                                return ['background-color: #90caf9'] * len(row)
+                        styled_results = loaded_data.style.apply(highlight_win_loss, axis=1)
+                        st.dataframe(styled_results, use_container_width=True)
+                else:
+                    st.warning("No matching simulations found for this combination.")
+            else:
+                st.info("No simulations found. Please run a simulation first.")
+        else:
+            st.info("No session history found yet.")
 
 # Past Sessions Tab
 with past_sessions_tab:
@@ -117,12 +184,10 @@ with past_sessions_tab:
     if os.path.exists(SESSION_HISTORY_PATH):
         history = pd.read_csv(SESSION_HISTORY_PATH)
 
-        # Filter option
         only_profitable = st.checkbox("Show Only Profitable Sessions")
         if only_profitable:
             history = history[history["Total Profit"] > 0]
 
-        # Highlighting function
         def highlight_profit(row):
             if row["Total Profit"] > 0:
                 return ['background-color: #a5d6a7'] * len(row)
@@ -131,7 +196,6 @@ with past_sessions_tab:
             else:
                 return [''] * len(row)
 
-        # Multi-select session deletion
         selected_indices = st.multiselect(
             "Select sessions to delete (by row index):",
             options=history.index,

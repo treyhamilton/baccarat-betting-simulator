@@ -1,6 +1,8 @@
-Date/Time,Input File,Starting Balance,Starting Bet,Final Balance,Total Profit,Win Rate,Hands Played
-2025-04-28 18:38:06,lonestar_rd1.csv,500,5,678.5,178.5,60.66%,61
-2025-04-28 18:38:36,lonestar_rd2.csv,500,5,622.5,122.5,42.62%,61
-2025-04-28 18:38:42,lonestar_rd3.csv,500,5,80.5,-419.5,28.57%,42
-2025-04-28 19:18:33,lonestar_rd4.csv,500,5,619.0,119.0,41.67%,60
-2025-04-28 19:18:42,lonestar_rd5.csv,500,5,629.5,129.5,45.00%,60
+Date/Time,Input File,Starting Balance,Starting Bet,Final Balance,Total Profit,Win Rate,Hands Played,Output File
+2025-04-28 20:01:36,lonestar_rd1.csv,500,5,678.5,178.5,60.66%,61,simulation_results_lonestar_rd1_500_5_20250428_200136.csv
+2025-04-28 20:01:53,lonestar_rd1.csv,500,10,857.0,357.0,60.66%,61,simulation_results_lonestar_rd1_500_10_20250428_200153.csv
+2025-04-28 20:02:08,lonestar_rd1.csv,1000,25,1892.5,892.5,60.66%,61,simulation_results_lonestar_rd1_1000_25_20250428_200208.csv
+2025-04-28 20:02:15,lonestar_rd1.csv,1000,50,2785.0,1785.0,60.66%,61,simulation_results_lonestar_rd1_1000_50_20250428_200215.csv
+2025-04-28 20:02:44,lonestar_rd3.csv,1000,10,161.0,-839.0,28.57%,42,simulation_results_lonestar_rd3_1000_10_20250428_200244.csv
+2025-04-28 20:03:02,lonestar_rd3.csv,1000,5,750.0,-250.0,33.33%,60,simulation_results_lonestar_rd3_1000_5_20250428_200302.csv
+2025-04-28 20:04:04,lonestar_rd3.csv,1000,10,161.0,-839.0,28.57%,42,simulation_results_lonestar_rd3_1000_10_20250428_200404.csv

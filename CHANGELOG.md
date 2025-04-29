@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.3] - 2025-04-28
+
+### Major Enhancements
+- Added multi-level dynamic dropdowns to **Load Past Simulation** tab
+  - Select by Baccarat Round ➔ Starting Balance ➔ Starting Bet
+  - Browse and reload any past simulation without rerunning
+- Updated simulation results file naming to include:
+  - Input File Name, Starting Balance, Starting Bet, and Timestamp
+  - Example: `simulation_results_lonestar_rd3_500_5_20250428_1945.csv`
+- Improved session history tracking with a new field for the Output File name
+- Ensured clean separation between **New Simulations** and **Past Simulations** browsing
+- Added automatic prevention of file overwriting for different runs on the same input file
+
+### Bug Fixes
+- Fixed potential KeyError when loading outdated session history files
+- Added error handling for missing past simulation files
+
+### UI/UX Improvements
+- Clean, intuitive multi-level dropdown selection system for past simulations
+- Friendly success/error messages for loading simulations
+- Enhanced scalability for managing many simulations across multiple rounds and parameter sets
+
 ---
 
 ## [v1.2] - 2025-04-28
