@@ -32,6 +32,28 @@ st.title("🎰 Baccarat Betting Simulator")
 # Create tabs
 simulator_tab, past_sessions_tab = st.tabs(["Simulator", "Past Sessions"])
 
+# Helper function to calculate full stats from results
+def calculate_full_statistics(results):
+    stats = {}
+    stats['Player Wins'] = (results['Outcome'] == 'Player').sum()
+    stats['Banker Wins'] = (results['Outcome'] == 'Banker').sum()
+    stats['Ties'] = (results['Outcome'] == 'Tie').sum()
+    stats['Wins on Player'] = ((results['Bet Side'] == 'Player') & (results['Result'] == 'Win')).sum()
+    stats['Wins on Banker'] = ((results['Bet Side'] == 'Banker') & (results['Result'] == 'Win')).sum()
+    stats['Losses on Player'] = ((results['Bet Side'] == 'Player') & (results['Result'] == 'Loss')).sum()
+    stats['Losses on Banker'] = ((results['Bet Side'] == 'Banker') & (results['Result'] == 'Loss')).sum()
+    stats['Hands Played'] = len(results)
+    stats['Balance'] = results['Balance'].iloc[-1]
+    stats['Total Profit'] = results['Balance'].iloc[-1] - results['Balance'].iloc[0]
+    stats['Win Rate'] = f"{(results['Result'].eq('Win').sum() / len(results)) * 100:.2f}%"
+    stats['Sequence 1 Bets'] = (results['Sequence Step'] == 1).sum()
+    stats['Sequence 2 Bets'] = (results['Sequence Step'] == 2).sum()
+    stats['Sequence 3 Bets'] = (results['Sequence Step'] == 3).sum()
+    stats['Sequence 4 Bets'] = (results['Sequence Step'] == 4).sum()
+    stats['Sequence 5 Bets'] = (results['Sequence Step'] == 5).sum()
+    stats['Sequence 6 Bets'] = (results['Sequence Step'] == 6).sum()
+    return stats
+
 # Simulator Tab
 with simulator_tab:
     st.header("🎛️ Simulation Mode")
@@ -76,13 +98,17 @@ with simulator_tab:
 
                 session_history.to_csv(SESSION_HISTORY_PATH, index=False)
 
-                # Display Results
                 st.header("🏆 Session Summary")
                 col1, col2, col3, col4 = st.columns(4)
                 col1.metric("Final Balance", f"${stats['Final Balance']:.2f}")
                 col2.metric("Total Profit", f"${stats['Total Profit']:.2f}")
                 col3.metric("Win Rate", stats['Win Rate'])
                 col4.metric("Hands Played", stats['Hands Played'])
+
+                st.header("📊 Simulation Statistics")
+                for key, value in stats.items():
+                    if key not in ["Final Balance", "Total Profit", "Win Rate", "Hands Played"]:
+                        st.write(f"**{key}:** {value}")
 
                 st.header("📈 Visualizations")
                 st.plotly_chart(plot_balance_over_time(results))
@@ -132,28 +158,21 @@ with simulator_tab:
                     output_file_to_load = final_selection.iloc[-1]["Output File"]
                     loaded_data = pd.read_csv(f"output/{output_file_to_load}")
 
-                    # Calculate stats manually
-                    balance = loaded_data["Balance"].iloc[-1]
-                    total_profit = balance - loaded_data["Balance"].iloc[0]
-                    wins = loaded_data[loaded_data["Result"] == "Win"].shape[0]
-                    total_hands = loaded_data.shape[0]
-                    win_rate = f"{(wins/total_hands)*100:.1f}%"
-
-                    stats = {
-                        "Final Balance": balance,
-                        "Total Profit": total_profit,
-                        "Win Rate": win_rate,
-                        "Hands Played": total_hands
-                    }
+                    stats = calculate_full_statistics(loaded_data)
 
                     st.success(f"Loaded simulation from {output_file_to_load}")
 
                     st.header("🏆 Session Summary")
                     col1, col2, col3, col4 = st.columns(4)
-                    col1.metric("Final Balance", f"${stats['Final Balance']:.2f}")
+                    col1.metric("Final Balance", f"${stats['Balance']:.2f}")
                     col2.metric("Total Profit", f"${stats['Total Profit']:.2f}")
                     col3.metric("Win Rate", stats['Win Rate'])
                     col4.metric("Hands Played", stats['Hands Played'])
+
+                    st.header("📊 Simulation Statistics")
+                    for key, value in stats.items():
+                        if key not in ["Balance", "Total Profit", "Win Rate", "Hands Played"]:
+                            st.write(f"**{key}:** {value}")
 
                     st.header("📈 Visualizations")
                     st.plotly_chart(plot_balance_over_time(loaded_data))
